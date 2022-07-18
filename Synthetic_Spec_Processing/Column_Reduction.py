@@ -5,12 +5,12 @@ waverange = [6460,9000]
 
 print('\nStarting process to reduce raw synthetic spectrum files.')
 
-for file in os.listdir('../Data/SYNTHETIC/'):
+for file in os.listdir('../Data/SYNTHETIC/Raw/'):
     filename = os.fsdecode(file)
      
     if filename.endswith(".7"): 
          
-        df = pd.read_csv(f'../Data/SYNTHETIC/{filename}',usecols=[0, 1],names=['wave','flux'],sep='\s+',low_memory=False)
+        df = pd.read_csv(f'../Data/SYNTHETIC/Raw/{filename}',usecols=[0, 1],names=['wave','flux'],sep='\s+',low_memory=False)
         
         if df.dtypes.wave == 'object':
             df['wave']=df['wave'].str.replace('D','e')
@@ -25,7 +25,7 @@ for file in os.listdir('../Data/SYNTHETIC/'):
 
         df['flux']=10**(df['flux']-8)      
         
-        df.to_csv(f'../Data/Reduced/{filename}.txt',sep='\t',index=False,header=False)
+        df.to_csv(f'../Data/SYNTHETIC/Reduced/{filename}.txt',sep='\t',index=False,header=False)
                 
         print(f'Spectrum {filename} reduced.')
         continue
