@@ -1,9 +1,10 @@
 import pandas as pd
 import os
+from synth_modules import spec_normalize
 
 waverange = [6460,9000]
 
-print('\nStarting process to reduce raw synthetic spectrum files.')
+print('\nStarting process to reduce and normalize raw synthetic spectrum files.')
 
 for file in os.listdir('../Data/SYNTHETIC/Raw/'):
     filename = os.fsdecode(file)
@@ -25,11 +26,14 @@ for file in os.listdir('../Data/SYNTHETIC/Raw/'):
 
         df['flux']=10**(df['flux']-8)      
         
-        df.to_csv(f'../Data/SYNTHETIC/Reduced/{filename}.txt',sep='\t',index=False,header=False)
-                
-        print(f'Spectrum {filename} reduced.')
+        #df.to_csv(f'../Data/SYNTHETIC/Reduced/{filename}.txt',sep='\t',index=False,header=False)       
+        #print(f'Spectrum {filename} reduced.')
+
+        norm_df = spec_normalize(df)
+        norm_df.to_csv(f'../Data/SYNTHETIC/Normalized/norm_{filename}.txt',sep='\t',index=False,header=False)
+        print(f'Spectrum {filename} normalized.')
         continue
     else:
         continue
 
-print('\nProcess has been completed.')
+print('\nAll spectra have been normalized.')
