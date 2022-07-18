@@ -1,2 +1,2 @@
 # Atmospheric_Studies_VLMS
- Python code for estimation of elemental abundances of stars using MCMC
+Python pipeline for estimaton of elemental abundance of very low mass stars
