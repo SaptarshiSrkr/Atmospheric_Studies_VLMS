@@ -1,0 +1,9 @@
+Step 1. Run make_dirs.py through terminal to create necessary directories to store spectral data.
+
+Step 2. Place the synthetic spectra in Data/SYNTHETIC/Raw
+Step 3. Run batch_normize.py through terminal in Synthetic_Spec_Processing to normalize all synthetic spectra.
+Step 4. Run convolve.py through terminal in Synthetic_Spec_Processing to convolve all normalized synthetic spectra.
+
+
+Step 5. Place the observed spectra in Data/OBSERVED/Raw
+Step 6. Run normalize_rvcorr.py in Observed_Spec_Processing to normalize and RV correct all observed spectra.
