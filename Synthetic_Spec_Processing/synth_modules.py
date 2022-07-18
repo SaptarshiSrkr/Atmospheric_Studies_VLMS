@@ -7,12 +7,12 @@ def spec_normalize(spec_df):
     Parameters
     ----------
     spec_df : Pandas DataFrame
-        Pandas DataFrame containing the unnormalised spectrum. Must have columns 'wave' and 'flux'
+        Pandas DataFrame containing the unnormalized spectrum. Must have columns 'wave' and 'flux'
 
     Returns
     -------
     norm_spec_df : Pandas DataFrame
-        Pandas DataFrame containing the normalised spectrum.
+        Pandas DataFrame containing the normalized spectrum.
 
     '''
     spec_df.drop_duplicates('wave',inplace=True,ignore_index=True)
