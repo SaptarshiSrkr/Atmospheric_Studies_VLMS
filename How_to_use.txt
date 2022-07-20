@@ -7,3 +7,5 @@ Step 4. Run convolve.py through terminal in Synthetic_Spec_Processing to convolv
 
 Step 5. Place the observed spectra in Data/OBSERVED/Raw
 Step 6. Run normalize_rvcorr.py in Observed_Spec_Processing to normalize and RV correct all observed spectra.
+
+Step 7. Run mcmc.py in Parameter_Estimation after doing the necessary modifications.

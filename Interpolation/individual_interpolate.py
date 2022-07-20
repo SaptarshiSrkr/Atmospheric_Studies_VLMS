@@ -1,5 +1,5 @@
 import pandas as pd
-from spectrum_interpolate import spec_interpolate
+from interpolation import spec_interpolate
 
 teff = 3904
 logg = 4.80

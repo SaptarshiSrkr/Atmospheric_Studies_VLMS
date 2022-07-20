@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp2d, RegularGridInterpolator
 
-conv_synth_dir = '../Data/SYNTHEITC/Convolved'
+conv_synth_dir = '../Data/SYNTHETIC/Convolved'
 
 #Creating a dataframe of available spectra to use for interpolation
 
