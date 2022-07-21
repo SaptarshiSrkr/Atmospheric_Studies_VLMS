@@ -66,7 +66,7 @@ for teff in np.arange(3900,4200,100):
            starting_guesses.append([teff,round(logg,2),round(metal,1)])
  
 ndim = 3
-nsteps = 150
+nsteps = 100
 nwalkers = len(starting_guesses)
 
 backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
