@@ -1,11 +1,12 @@
 import emcee
+import corner
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, "..\Interpolation")
 from interpolation import spec_interpolate
-np.random.seed(22)
+np.random.seed(20)
 
 observed_file = 'norm_RVcorr_LHS72.txt'
 
@@ -66,7 +67,7 @@ for teff in np.arange(3900,4200,100):
            starting_guesses.append([teff,round(logg,2),round(metal,1)])
  
 ndim = 3
-nsteps = 100
+nsteps = 500
 nwalkers = len(starting_guesses)
 
 backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
@@ -78,8 +79,11 @@ coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
 fig, ax = plt.subplots(3, sharex=True)
 for i in range(3):
     ax[i].plot(sampler.chain[:, :, i].T, '-k', alpha=0.5)
+    
+ax[0].set_ylabel('Teff',fontsize=15)
+ax[1].set_ylabel('log g',fontsize=15)
+ax[2].set_ylabel('[M/H]',fontsize=15)
 fig.savefig(f'Chains_{observed_file}_final.png',dpi=500)
     
-import corner
-figure = corner.corner(sampler.flatchain,labels=['Teff', 'Log g', '[M/H]'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(3800,4200),(4,5.5),(-2.5,0)])
+figure = corner.corner(sampler.flatchain,labels=['Teff', 'log g', '[M/H]'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(3800,4200),(4,5.5),(-2.5,0)])
 plt.savefig(f'Corner_{observed_file}.png',dpi=500)
