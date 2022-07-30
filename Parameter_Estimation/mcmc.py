@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, "..\Interpolation")
 from interpolation import spec_interpolate
-import multiprocess as mp
 np.random.seed(20)
 
 observed_file = 'norm_RVcorr_LHS72.txt'
