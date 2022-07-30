@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, "..\Interpolation")
 from interpolation import spec_interpolate
+import multiprocess as mp
 np.random.seed(20)
 
 observed_file = 'norm_RVcorr_LHS72.txt'
@@ -59,31 +60,48 @@ def log_posterior(theta, gaprange, telluric_ranges):
         return log_prior(theta)
     else:
         return log_likelihood(theta, gaprange, telluric_ranges)+log_prior(theta)
+ 
+backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
+
+
+#For the 1st run 
+#*****************************************    
+'''
+backend.reset(nwalkers,ndim)
 
 starting_guesses = []
 for teff in np.arange(3900,4200,100):
     for logg in np.arange(4.5,5.5,0.5):
         for metal in np.arange(-2,0,0.5):
            starting_guesses.append([teff,round(logg,2),round(metal,1)])
- 
-ndim = 3
-nsteps = 500
-nwalkers = len(starting_guesses)
 
-backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
-backend.reset(nwalkers,ndim)
+'''
+#*****************************************  
+
+#For subsequent runs (when logfile is present)
+
+#*****************************************  
+
+starting_guesses = backend.get_chain()[-1]
+
+#*****************************************  
+
+nsteps = 284
+ndim = 3
+nwalkers = len(starting_guesses)
 
 sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior, args=(gaprange, telluric_ranges),backend=backend)
 coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
 
 fig, ax = plt.subplots(3, sharex=True)
+
 for i in range(3):
-    ax[i].plot(sampler.chain[:, :, i].T, '-k', alpha=0.5)
+    ax[i].plot(sampler.get_chain(), '-k', alpha=0.5)
     
 ax[0].set_ylabel('Teff',fontsize=15)
 ax[1].set_ylabel('log g',fontsize=15)
 ax[2].set_ylabel('[M/H]',fontsize=15)
 fig.savefig(f'Chains_{observed_file}_final.png',dpi=500)
     
-figure = corner.corner(sampler.flatchain,labels=['Teff', 'log g', '[M/H]'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(3800,4200),(4,5.5),(-2.5,0)])
+figure = corner.corner(sampler.get_chain(flat=True),labels=['Teff', 'log g', '[M/H]'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(3800,4200),(4,5.5),(-2.5,0)])
 plt.savefig(f'Corner_{observed_file}.png',dpi=500)
