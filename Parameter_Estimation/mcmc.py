@@ -92,10 +92,10 @@ nwalkers = len(starting_guesses)
 sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior, args=(gaprange, telluric_ranges),backend=backend)
 coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
 
-fig, ax = plt.subplots(3, sharex=True)
+fig, ax = plt.subplots(3, sharex=True,figsize=(10,8))
 
 for i in range(3):
-    ax[i].plot(sampler.get_chain(), '-k', alpha=0.5)
+    ax[i].plot(sampler.get_chain()[:, :, i],'-k', alpha=0.5)
     
 ax[0].set_ylabel('Teff',fontsize=15)
 ax[1].set_ylabel('log g',fontsize=15)
