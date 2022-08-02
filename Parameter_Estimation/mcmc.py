@@ -8,7 +8,7 @@ sys.path.insert(0, "..\Interpolation")
 from interpolation import spec_interpolate
 np.random.seed(20)
 
-observed_file = 'norm_RVcorr_LHS72.txt'
+observed_file = 'norm_RVcorr_LHS73.txt'
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 
@@ -60,20 +60,21 @@ def log_posterior(theta, gaprange, telluric_ranges):
     else:
         return log_likelihood(theta, gaprange, telluric_ranges)+log_prior(theta)
  
+    
+ndim = 3
+ 
 backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
 
-
 #For the 1st run 
-#*****************************************    
-'''
-backend.reset(nwalkers,ndim)
-
+#***************************************** 
+'''   
 starting_guesses = []
 for teff in np.arange(3900,4200,100):
     for logg in np.arange(4.5,5.5,0.5):
         for metal in np.arange(-2,0,0.5):
            starting_guesses.append([teff,round(logg,2),round(metal,1)])
-
+           
+backend.reset(len(starting_guesses),ndim)
 '''
 #*****************************************  
 
@@ -85,11 +86,10 @@ starting_guesses = backend.get_chain()[-1]
 
 #*****************************************  
 
-nsteps = 284
-ndim = 3
+nsteps = 500
 nwalkers = len(starting_guesses)
 
-sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior, args=(gaprange, telluric_ranges),backend=backend)
+sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior, args=(gaprange, telluric_ranges), backend=backend)
 coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
 
 fig, ax = plt.subplots(3, sharex=True,figsize=(10,8))
