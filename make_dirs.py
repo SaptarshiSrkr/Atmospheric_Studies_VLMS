@@ -15,7 +15,7 @@ for path in paths:
         os.makedirs(newpath)
         print(f'Created directory: Data/{path}\n')
 
-synth_paths = ['Raw','Normalized','Convolved']
+synth_paths = ['Raw','Normalized','Convolved','Raw_Abun','Normalized_Abun','Convolved_Abun']
 
 for synth_path in synth_paths:
     newpath = f'Data/SYNTHETIC/{synth_path}' 
