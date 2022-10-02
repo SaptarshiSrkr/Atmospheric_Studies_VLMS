@@ -22,7 +22,7 @@ for file in os.listdir(f'{conv_synth_dir}'):
         df['Abundance'] = float(synthetic_file.split('_')[3])/100
         spectra_df = pd.concat([spectra_df,df],ignore_index=True)
         
-def abun_interpolate(logg,ion,abundance):
+def abun_interpolate(logg,ion,abundance,gaprange = False, telluric_ranges = False):
     '''
 
     Parameters
@@ -33,6 +33,10 @@ def abun_interpolate(logg,ion,abundance):
         Name of ion.
     abundance : float
         Abundance.
+    gaprange : list, optional
+        The gaprange of the observed spectrum. The default is False.
+    telluric_ranges : list, optional
+        Ranges of Telluric lines. The default is False.
 
     Raises
     ------
@@ -48,16 +52,25 @@ def abun_interpolate(logg,ion,abundance):
     df = spectra_df[(spectra_df.Ion == ion) & (spectra_df.Logg == logg)]
     df.reset_index(inplace=True,drop=True)
     
-    if abundance in np.array(df['Abundance']):
-        file_available = df[df.Abundance == abundance].reset_index(drop=True)['Spectrum'][0]
-        df_available = pd.read_csv(f'{conv_synth_dir}/{file_available}',names=['wave','flux'],delim_whitespace=True)
-                                   
-        return df_available
-    
     if df[df.Abundance <= abundance].empty or df[df.Abundance >= abundance].empty:
         la = df['Abundance'].min()
         ua = df['Abundance'].max()
         raise ValueError(f'\nAbundance {abundance} is not inside the grid. Please enter a value between {la} and {ua}.')
+    
+    if abundance in np.array(df['Abundance']):
+        file_available = df[df.Abundance == abundance].reset_index(drop=True)['Spectrum'][0]
+        df_available = pd.read_csv(f'{conv_synth_dir}/{file_available}',names=['wave','flux'],delim_whitespace=True)
+        
+        if bool(gaprange):
+            df_available = df_available[(df_available['wave']<gaprange[0]) | (df_available['wave']>gaprange[1])]
+            df_available.reset_index(inplace = True,drop=True)
+
+        if bool(telluric_ranges):
+            for i in range(len(telluric_ranges)):
+                df_available = df_available[(df_available['wave']<telluric_ranges[i][0]) | (df_available['wave']>telluric_ranges[i][1])]
+            df_available.reset_index(inplace = True,drop=True)
+                                   
+        return df_available
     
     lower_abundance = df[df.Abundance <= abundance].sort_values('Abundance',ascending=False).reset_index(drop=True)['Abundance'][0]
     upper_abundance = df[df.Abundance >= abundance].sort_values('Abundance').reset_index(drop=True)['Abundance'][0]
@@ -66,6 +79,16 @@ def abun_interpolate(logg,ion,abundance):
     upper_file = df[df.Abundance == upper_abundance].reset_index(drop=True)['Spectrum'][0]
     
     lower_df = pd.read_csv(f'{conv_synth_dir}/{lower_file}',names=['wave','flux'],delim_whitespace=True)
+    
+    if bool(gaprange):
+        lower_df = lower_df[(lower_df['wave']<gaprange[0]) | (lower_df['wave']>gaprange[1])]
+        lower_df.reset_index(inplace = True,drop=True)
+
+    if bool(telluric_ranges):
+        for i in range(len(telluric_ranges)):
+            lower_df = lower_df[(lower_df['wave']<telluric_ranges[i][0]) | (lower_df['wave']>telluric_ranges[i][1])]
+        lower_df.reset_index(inplace = True,drop=True)  
+    
     wave = np.array(lower_df['wave'])
     
     pre_upper_df = pd.read_csv(f'{conv_synth_dir}/{upper_file}',names=['wave','flux'],delim_whitespace=True)
