@@ -8,8 +8,8 @@ sys.path.insert(0, "..\Interpolation")
 from interpolation_abun import abun_interpolate
 np.random.seed(22)
 
-observed_file = 'norm_RVcorr_LHS72.txt' 
-logg = 4.7
+observed_file = 'norm_RVcorr_LHS73.txt' 
+logg = 4.8
 ion = 'Ca'
 
 #Logg = 4.7 for LHS72 and 4.8 for LHS73
@@ -66,10 +66,10 @@ for abun in np.arange(abun_min,abun_max,0.025):
     starting_guesses.append([abun])
     
 ndim = 1
-nsteps = 500
+nsteps = 100
 nwalkers = len(starting_guesses)                                      
 
-backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
+backend = emcee.backends.HDFBackend(f"logfile_{ion}_{observed_file}.h5")
 backend.reset(len(starting_guesses),ndim)
 
 sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior,args=(logg, ion, gaprange, telluric_ranges), backend=backend)
@@ -78,7 +78,7 @@ coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
 plt.figure(figsize=(10,6))
 plt.plot(sampler.get_chain()[:, :, 0],'-k', alpha=0.5)
 plt.ylabel(f'{ion} Abundance',fontsize=15)
-plt.savefig(f'Chains_{observed_file}_final.png',dpi=500)
+plt.savefig(f'Chains_{ion}_{observed_file}_final.png',dpi=500)
     
 figure = corner.corner(sampler.get_chain(flat=True),labels=[f'{ion} Abundance'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(abun_min,abun_max)])
-plt.savefig(f'Corner_{observed_file}.png',dpi=500)
+plt.savefig(f'Corner_{ion}_{observed_file}.png',dpi=500)
