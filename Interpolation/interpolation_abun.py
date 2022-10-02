@@ -22,7 +22,7 @@ for file in os.listdir(f'{conv_synth_dir}'):
         df['Abundance'] = float(synthetic_file.split('_')[3])/100
         spectra_df = pd.concat([spectra_df,df],ignore_index=True)
         
-def abun_interpolate(logg, ion, abundance):
+def abun_interpolate(logg,ion,abundance):
     '''
 
     Parameters
