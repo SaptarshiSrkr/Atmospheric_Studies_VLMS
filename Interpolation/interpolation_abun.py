@@ -29,9 +29,9 @@ def abun_interpolate(logg,ion,abundance):
     ----------
     logg : float
         Log of surface gravity.
-    ion : TYPE
+    ion : string
         Name of ion.
-    abundance : TYPE
+    abundance : float
         Abundance.
 
     Raises
@@ -48,16 +48,16 @@ def abun_interpolate(logg,ion,abundance):
     df = spectra_df[(spectra_df.Ion == ion) & (spectra_df.Logg == logg)]
     df.reset_index(inplace=True,drop=True)
     
-    if df[df.Abundance <= abundance].empty or df[df.Abundance >= abundance].empty:
-        la = df['Abundance'].min()
-        ua = df['Abundance'].max()
-        raise ValueError(f'\nAbundance {abundance} is not inside the grid. Please enter a value between {la} and {ua}.')
-    
     if abundance in np.array(df['Abundance']):
         file_available = df[df.Abundance == abundance].reset_index(drop=True)['Spectrum'][0]
         df_available = pd.read_csv(f'{conv_synth_dir}/{file_available}',names=['wave','flux'],delim_whitespace=True)
                                    
         return df_available
+    
+    if df[df.Abundance <= abundance].empty or df[df.Abundance >= abundance].empty:
+        la = df['Abundance'].min()
+        ua = df['Abundance'].max()
+        raise ValueError(f'\nAbundance {abundance} is not inside the grid. Please enter a value between {la} and {ua}.')
     
     lower_abundance = df[df.Abundance <= abundance].sort_values('Abundance',ascending=False).reset_index(drop=True)['Abundance'][0]
     upper_abundance = df[df.Abundance >= abundance].sort_values('Abundance').reset_index(drop=True)['Abundance'][0]

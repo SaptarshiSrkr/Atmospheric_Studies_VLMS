@@ -9,6 +9,13 @@ from interpolation_abun import abun_interpolate
 np.random.seed(20)
 
 observed_file = 'norm_RVcorr_LHS73.txt' 
+
+ion = 'Ca'
+logg = 4.8
+
+abun_min = 6.00
+abun_max = 6.64
+
 spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
 
 wave = np.array(spec['wave'])
@@ -28,14 +35,7 @@ def snr_estimate(flux):
     
 SNR = snr_estimate(flux)
 
-ion = 'Ca'
-abun_min = 6
-abun_max = 6.64
-
-logg = 4.8
-
-def log_likelihood(theta):
-    abundance = theta[0]
+def log_likelihood(abundance):
     syn_spec = abun_interpolate(logg,ion,abundance)
     syn_wave = np.array(syn_spec['wave'])
     syn_flux = np.array(syn_spec['flux'])
@@ -43,31 +43,27 @@ def log_likelihood(theta):
     fluxerr = isyn_flux/SNR
     return -0.5 * np.sum(np.log(2*np.pi*fluxerr**2) + (flux - isyn_flux)**2/fluxerr**2)
 
-def log_prior(theta):
-    abundance = theta[0]
+def log_prior(abundance):
     if abundance < abun_min or abundance > abun_max:
         return -np.inf
     else:
         return 0
 
-def log_posterior(theta):
-    if np.isinf(log_prior(theta)):
-        return log_prior(theta)
+def log_posterior(abundance):
+    if np.isinf(log_prior(abundance)):
+        return log_prior(abundance)
     else:
-        return (log_likelihood(theta)+log_prior(theta))
+        return (log_likelihood(abundance)+log_prior(abundance))
  
 starting_guesses = []
-for abun in np.arange(abun_min,abun_max,0.05):
+for abun in np.arange(abun_min,abun_max,0.025):
     starting_guesses.append([abun])
     
 ndim = 1
-backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
-             
-backend.reset(len(starting_guesses),ndim)
-
 nsteps = 5
 nwalkers = len(starting_guesses)
 
+backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
 sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior ,backend=backend)
 coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
 
