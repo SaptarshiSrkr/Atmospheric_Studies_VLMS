@@ -8,14 +8,14 @@ sys.path.insert(0, "..\Interpolation")
 from interpolation_abun import abun_interpolate
 np.random.seed(22)
 
-observed_file = 'norm_RVcorr_LHS73.txt' 
-logg = 4.8
-ion = 'Ca'
+observed_file = 'norm_RVcorr_LHS72.txt' 
+logg = 4.7
+ion = 'Na'
 
 #Logg = 4.7 for LHS72 and 4.8 for LHS73
 
-abun_min = 6.00
-abun_max = 6.64
+abun_min = 5.94
+abun_max = 6.54
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 
@@ -61,13 +61,39 @@ def log_posterior(theta, logg, ion, gaprange, telluric_ranges):
     else:
         return (log_likelihood(theta, logg, ion, gaprange, telluric_ranges) + log_prior(theta))
  
-starting_guesses = []
-for abun in np.arange(abun_min,abun_max,0.025):
-    starting_guesses.append([abun])
-    
+starting_guesses = [[round(i,4)] for i in np.arange(abun_min,abun_max,0.025)]
+   
 ndim = 1
 nsteps = 100
 nwalkers = len(starting_guesses)                                      
+
+backend = emcee.backends.HDFBackend(f"logfile_{ion}_{observed_file}.h5")
+backend.reset(len(starting_guesses),ndim)
+
+sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior,args=(logg, ion, gaprange, telluric_ranges), backend=backend)
+coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
+
+plt.figure(figsize=(10,6))
+plt.plot(sampler.get_chain()[:, :, 0],'-k', alpha=0.5)
+plt.ylabel(f'{ion} Abundance',fontsize=15)
+plt.savefig(f'Chains_{ion}_{observed_file}_final.png',dpi=500)
+    
+figure = corner.corner(sampler.get_chain(flat=True),labels=[f'{ion} Abundance'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(abun_min,abun_max)])
+plt.savefig(f'Corner_{ion}_{observed_file}.png',dpi=500)
+
+##############################################
+#extra lines
+##############################################
+
+observed_file = 'norm_RVcorr_LHS73.txt' 
+logg = 4.8                         
+
+spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
+
+wave = np.array(spec['wave'])
+flux = np.array(spec['flux'])
+
+SNR = snr_estimate(flux)
 
 backend = emcee.backends.HDFBackend(f"logfile_{ion}_{observed_file}.h5")
 backend.reset(len(starting_guesses),ndim)
