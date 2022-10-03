@@ -5,23 +5,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, "..\Interpolation")
+
 from interpolation import spec_interpolate
 np.random.seed(20)
+
+import interpolation
+spectra_df = interpolation.spectra_df
+
+#########################################
+#INPUTS
+#########################################
 
 observed_file = 'norm_RVcorr_LHS73.txt'
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 
 
-spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
-spec = spec[(spec['wave']<gaprange[0]) | (spec['wave']>gaprange[1])]
-
-for i in range(len(telluric_ranges)):
-    spec = spec[(spec['wave']<telluric_ranges[i][0]) | (spec['wave']>telluric_ranges[i][1])]
-spec.reset_index(inplace = True,drop=True)
-
-wave = np.array(spec['wave'])
-flux = np.array(spec['flux'])
+#########################################
 
 def snr_estimate(flux):
     flux = np.array(flux)
@@ -34,7 +34,17 @@ def snr_estimate(flux):
         return float(signal / noise)  
     else:
         return 0.0
-    
+spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
+
+spec = spec[(spec['wave']<gaprange[0]) | (spec['wave']>gaprange[1])]
+
+for i in range(len(telluric_ranges)):
+    spec = spec[(spec['wave']<telluric_ranges[i][0]) | (spec['wave']>telluric_ranges[i][1])]
+spec.reset_index(inplace = True,drop=True)
+
+wave = np.array(spec['wave'])
+flux = np.array(spec['flux'])
+
 SNR = snr_estimate(flux)
 
 def log_likelihood(theta, gaprange, telluric_ranges): #theta = [teff,logg, metallicity]
@@ -44,9 +54,6 @@ def log_likelihood(theta, gaprange, telluric_ranges): #theta = [teff,logg, metal
     isyn_flux = np.interp(wave,syn_wave,syn_flux)
     fluxerr = isyn_flux/SNR
     return -0.5 * np.sum(np.log(2*np.pi*fluxerr**2) + (flux - isyn_flux)**2/fluxerr**2)
-
-theta_min = [3800,4.0,-2.5]
-theta_max = [4200,5.5,0]
 
 def log_prior(theta):
     if np.any(theta < theta_min) or np.any(theta > theta_max):
@@ -59,36 +66,35 @@ def log_posterior(theta, gaprange, telluric_ranges):
         return log_prior(theta)
     else:
         return log_likelihood(theta, gaprange, telluric_ranges)+log_prior(theta)
- 
     
+theta_min = [spectra_df['Teff'].min(),spectra_df['Logg'].min(),spectra_df['Metal'].min()]
+theta_max = [spectra_df['Teff'].max(),spectra_df['Logg'].max(),spectra_df['Metal'].max()]
+     
 ndim = 3
+nsteps = 500
  
 backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
 
 #For the 1st run 
 #***************************************** 
-'''   
+  
 starting_guesses = []
-for teff in np.arange(3900,4200,100):
-    for logg in np.arange(4.5,5.5,0.5):
-        for metal in np.arange(-2,0,0.5):
-           starting_guesses.append([teff,round(logg,2),round(metal,1)])
+for teff in np.arange(theta_min[0]+100,theta_max[0],100):
+    for logg in np.arange(theta_min[1]+0.5,theta_max[1],0.5):
+        for metal in np.arange(theta_min[2]+0.5,theta_max[2],0.5):
+           starting_guesses.append([teff,round(logg,4),round(metal,4)])
            
 backend.reset(len(starting_guesses),ndim)
+
+#*****************************************  
+#For subsequent runs (when logfile is present)
+#*****************************************  
+'''
+starting_guesses = backend.get_chain()[-1]
 '''
 #*****************************************  
 
-#For subsequent runs (when logfile is present)
-
-#*****************************************  
-
-starting_guesses = backend.get_chain()[-1]
-
-#*****************************************  
-
-nsteps = 500
 nwalkers = len(starting_guesses)
-
 sampler = emcee.EnsembleSampler(nwalkers, ndim, log_posterior, args=(gaprange, telluric_ranges), backend=backend)
 coords, prob, state = sampler.run_mcmc(starting_guesses, nsteps, progress=True)
 
