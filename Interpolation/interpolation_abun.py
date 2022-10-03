@@ -10,6 +10,8 @@ spectra_df['Logg'] = []
 spectra_df['Ion'] = []
 spectra_df['Abundance'] = []
 
+# Generate list of available specta in grid
+
 for file in os.listdir(f'{conv_synth_dir}'):
      synthetic_file = os.fsdecode(file)
      
@@ -46,16 +48,21 @@ def abun_interpolate(logg,ion,abundance,gaprange = False, telluric_ranges = Fals
     Returns
     -------
     pandas DataFrame
-        Returns interpolated spectrum.
+        The interpolated spectrum as a pandas DataFrame.
 
     '''
+        
     df = spectra_df[(spectra_df.Ion == ion) & (spectra_df.Logg == logg)]
     df.reset_index(inplace=True,drop=True)
+    
+    # Check if the abundance value requested is inside the grid, Raise valueerror if not. 
     
     if df[df.Abundance <= abundance].empty or df[df.Abundance >= abundance].empty:
         la = df['Abundance'].min()
         ua = df['Abundance'].max()
         raise ValueError(f'\nAbundance {abundance} is not inside the grid. Please enter a value between {la} and {ua}.')
+    
+    # Check if requested spectrum is already in the grid. Return it if it is after removing unnesessary wavelengths.
     
     if abundance in np.array(df['Abundance']):
         file_available = df[df.Abundance == abundance].reset_index(drop=True)['Spectrum'][0]
@@ -72,11 +79,15 @@ def abun_interpolate(logg,ion,abundance,gaprange = False, telluric_ranges = Fals
                                    
         return df_available
     
+    # Get lower and upper values of abundance for interpolation
+    
     lower_abundance = df[df.Abundance <= abundance].sort_values('Abundance',ascending=False).reset_index(drop=True)['Abundance'][0]
     upper_abundance = df[df.Abundance >= abundance].sort_values('Abundance').reset_index(drop=True)['Abundance'][0]
     
     lower_file = df[df.Abundance == lower_abundance].reset_index(drop=True)['Spectrum'][0]
     upper_file = df[df.Abundance == upper_abundance].reset_index(drop=True)['Spectrum'][0]
+    
+    # Import the lower spectrum and remove unnessary wavelengths.
     
     lower_df = pd.read_csv(f'{conv_synth_dir}/{lower_file}',names=['wave','flux'],delim_whitespace=True)
     
@@ -91,10 +102,14 @@ def abun_interpolate(logg,ion,abundance,gaprange = False, telluric_ranges = Fals
     
     wave = np.array(lower_df['wave'])
     
+    # Import upper spectrum and interpolate at the wavelengths of lower spectrum
+    
     pre_upper_df = pd.read_csv(f'{conv_synth_dir}/{upper_file}',names=['wave','flux'],delim_whitespace=True)
     upper_df = pd.DataFrame()
     upper_df['wave'] = wave
     upper_df['flux'] = np.interp(wave,pre_upper_df['wave'],pre_upper_df['flux'])
+    
+    # 1D Interpolation to get flux values
     
     flux_list = []
     for i in range(len(wave)):

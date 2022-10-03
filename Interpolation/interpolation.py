@@ -50,7 +50,7 @@ def spec_interpolate(teff, logg, metal, gaprange = False, telluric_ranges = Fals
 
     Returns
     -------
-    TYPE
+    pandas DataFrame
         The interpolated spectrum as a pandas DataFrame.
 
     '''
