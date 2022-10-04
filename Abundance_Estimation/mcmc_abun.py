@@ -16,8 +16,8 @@ spectra_df = interpolation_abun.spectra_df
 #INPUTS
 #########################################
 
-observed_file = 'norm_RVcorr_LHS72.txt' 
-logg = 4.7 #4.7 for LHS72, 4.8 for LHS73
+observed_file = 'norm_RVcorr_LHS73.txt' 
+logg = 4.8 #4.7 for LHS72, 4.8 for LHS73
 
 ions_list = ['Ca','Fe','Ti','Na']
 
