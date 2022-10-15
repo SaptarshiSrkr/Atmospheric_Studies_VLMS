@@ -10,5 +10,5 @@ LHS72_lines.dropna(inplace=True)
 LHS73_lines = line_identification(LHS73,flux_threshold=0.2)
 LHS73_lines.dropna(inplace=True)
 
-LHS72_lines.to_csv('LHS72_linelist.txt',sep='\t',index=False)
-LHS73_lines.to_csv('LHS73_linelist.txt',sep='\t',index=False)
+LHS72_lines.to_csv('LHS72_linelist.csv',sep=',',index=None)
+LHS73_lines.to_csv('LHS73_linelist.csv',sep=',',index=None)

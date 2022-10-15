@@ -117,8 +117,8 @@ def line_identification(spec_df,flux_threshold=0.2,wavelength_type='vacuum',line
             ions.append(np.nan) 
             
     df = pd.DataFrame()        
-    df['Absorption Lines (A)'] = lines_list       
-    df['Closest NIST Wavelength (A)'] = ion_lines
-    df['Corresponding Ion'] = ions
+    df['Absorption_Lines_(A)'] = lines_list       
+    df['Closest_NIST_Wavelength_(A)'] = ion_lines
+    df['Corresponding_Ion'] = ions
     
     return df
