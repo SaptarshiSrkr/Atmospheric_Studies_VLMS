@@ -7,10 +7,10 @@ import sys
 sys.path.insert(0, "..\Interpolation")
 
 from interpolation import spec_interpolate
-np.random.seed(20)
-
 import interpolation
 spectra_df = interpolation.spectra_df
+
+np.random.seed(20)
 
 #########################################
 #INPUTS
