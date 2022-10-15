@@ -1,0 +1,4 @@
+Abundance of Ca: 6.28 +/- 0.03
+Abundance of Fe: 7.26 +/- 0.06
+Abundance of Ti: 5.04 +/- 0.06
+Abundance of Na: 6.15 +/- 0.03
