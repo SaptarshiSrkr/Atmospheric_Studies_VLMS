@@ -12,31 +12,23 @@ from specutils.fitting import find_lines_derivative
 
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]]
 
-'''
-ions_list=['V','H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al',
-           'Si','P','S','Cl','Ar','K','Ca','Sc','Ti','Cr','Mn','Fe','Co',
-           'Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr',
-           'Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','Xe',
-           'Cs','Ba']
-'''
-
-ions_list=['Ca']
-
-def line_identification(spec_df,flux_threshold=0.2,wavelength_type='vacuum',line_range=False,synthetic_spectrum=False):
+def line_identification(spec_df,ions_list,flux_threshold=0.2,wavelength_type='vacuum',line_range=False,synthetic_spectrum=False):
     '''
 
     Parameters
     ----------
     spec_df : Pandas DataFrame
-        The spectrum for which line identification has to be done. Must have columns 'wave' and 'flux'.
+        The spectrum for which line identification has to be done. Must have columns 'wave' and 'flux'
+    ions_list : list
+        List of ions for which lines need to be identified (V,I must be placed in the front index!)
     flux_threshold : float, optional
         The threshold flux for identification. The default is 0.2.
     wavelength_type : either 'air+vacuum' or 'vacuum', optional
         The default is 'vacuum'.
     line_range : list, optional
-        Range of wavelengths for which identification has to be done. The default is the entire spectrum.
+        Range of wavelengths for which identification has to be done. The default is the entire spectrum
     synthetic_spectrum : bool, optional
-        Either 'True' or 'False'. Identification for telluric range is not done if False. The default is False.
+        Either 'True' or 'False'. Identification for telluric range is not done if False. The default is False
 
     Returns
     -------
@@ -111,7 +103,6 @@ def line_identification(spec_df,flux_threshold=0.2,wavelength_type='vacuum',line
             ions.append(prob_ions[i_closest])
 
         except Exception as e: 
-            
             #print(e)
             ion_lines.append(np.nan)
             ions.append(np.nan) 

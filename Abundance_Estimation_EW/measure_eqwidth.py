@@ -7,7 +7,7 @@ from scipy.signal import find_peaks
 from lmfit.models import GaussianModel, VoigtModel, LorentzianModel, ConstantModel
 
 spec_file = 'norm_RVcorr_LHS72.txt'
-lines_file = 'Ca_linesWends.csv'
+lines_file = 'norm_RVcorr_LHS72.txt_linelist.csv'
 
 spec_df = pd.read_csv(f'../Data/OBSERVED/Processed/{spec_file}',names=['wave','flux'],delim_whitespace=True)
 lines_df = pd.read_csv(f'{lines_file}')
@@ -48,9 +48,9 @@ ew_err_list = []
 
 for i in range(len(lines_df)):
 
-    line = lines_df['wave'][i]
-    blue_end = lines_df['blue_end'][i]
-    red_end = lines_df['red_end'][i]
+    line = lines_df['Closest_NIST_Wavelength_(A)'][i]
+    blue_end = lines_df['Blue_end'][i]
+    red_end = lines_df['Red_end'][i]
     
     df1 = spec_df[(spec_df.wave >= blue_end) & (spec_df.wave <= red_end)]
     df1.reset_index(inplace=True,drop=True)
@@ -71,14 +71,14 @@ for i in range(len(lines_df)):
     pars = model.make_params()
     pars['c'].set(value=1)
 
-    if lines_df['profile'][i] == 'Gaussian':
+    if lines_df['Profile'][i] == 'Gaussian':
         profile = GaussianModel
-    elif lines_df['profile'][i] == 'Voigt':
+    elif lines_df['Profile'][i] == 'Voigt':
         profile = VoigtModel
-    elif lines_df['profile'][i] == 'Lorentzian':
+    elif lines_df['Profile'][i] == 'Lorentzian':
         profile = LorentzianModel
     
-    profilestr = lines_df['profile'][i]
+    profilestr = lines_df['Profile'][i]
     
     for peak_index in range(len(peak_indices)):
         prefix = chr(ord('a') + peak_index)
