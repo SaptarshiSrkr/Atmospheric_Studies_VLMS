@@ -34,7 +34,8 @@ def ew_synth(spec_df,obs_lines,ion):
     ew_list = []
     
     for i in range(len(obs_lines)):
-        obs_lines = obs_lines[obs_lines['Corresponding_Ion']==ion]
+        obs_lines = obs_lines[obs_lines['Corresponding_Ion'].str.contains(f"{ion}")]
+        obs_lines.reset_index(inplace=True,drop=True)
         line = obs_lines['Closest_NIST_Wavelength_(A)'][i]
         blue_end = obs_lines['Blue_end'][i]
         red_end = obs_lines['Red_end'][i]
@@ -88,9 +89,10 @@ def ew_synth(spec_df,obs_lines,ion):
         ew = equivalent_width(np.array(df1['wave']),1+comps[f'{pfix}_'])
         ew_list.append(ew)
         
-        synth_ews = pd.DataFrame()
-        synth_ews['Closest_NIST_Wavelength_(A)'] = obs_lines['Closest_NIST_Wavelength_(A)']
-        synth_ews['EW'] = ew_list
+    synth_ews = pd.DataFrame()
+    synth_ews['Closest_NIST_Wavelength_(A)'] = obs_lines['Closest_NIST_Wavelength_(A)']
+    synth_ews['Corresponding_Ion'] = obs_lines['Corresponding_Ion']
+    synth_ews['EW'] = ew_list
         
     return synth_ews
     
