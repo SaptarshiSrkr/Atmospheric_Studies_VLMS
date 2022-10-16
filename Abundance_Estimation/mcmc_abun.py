@@ -7,10 +7,10 @@ import sys
 sys.path.insert(0, "..\Interpolation")
 
 from interpolation_abun import abun_interpolate
-np.random.seed(20)
-
 import interpolation_abun
 spectra_df = interpolation_abun.spectra_df
+
+np.random.seed(20)
 
 #########################################
 #INPUTS
@@ -40,6 +40,8 @@ def snr_estimate(flux):
     
 spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
 
+snr = snr_estimate(np.array(spec['flux']))
+
 spec = spec[(spec['wave']<gaprange[0]) | (spec['wave']>gaprange[1])]
 
 for i in range(len(telluric_ranges)):
@@ -48,9 +50,7 @@ spec.reset_index(inplace = True,drop=True)
 
 wave = np.array(spec['wave'])
 flux = np.array(spec['flux'])
-    
-snr = snr_estimate(flux)
-    
+        
 def log_likelihood(theta, logg, ion, gaprange, telluric_ranges):
     abundance=theta[0]
     syn_spec = abun_interpolate(logg,ion,abundance, gaprange, telluric_ranges)

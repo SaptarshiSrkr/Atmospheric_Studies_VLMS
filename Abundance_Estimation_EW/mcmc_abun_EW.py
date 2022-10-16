@@ -53,7 +53,7 @@ def log_posterior(theta, logg, ion, gaprange, telluric_ranges, obs_lines):
         return (log_likelihood(theta, logg, ion, gaprange, telluric_ranges, obs_lines) + log_prior(theta))
     
 ndim = 1
-nsteps = 5  
+nsteps = 200  
     
 for ion in ions_list:
 

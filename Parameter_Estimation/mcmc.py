@@ -36,6 +36,8 @@ def snr_estimate(flux):
         return 0.0
 spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
 
+snr = snr_estimate(np.array(spec['flux']))
+
 spec = spec[(spec['wave']<gaprange[0]) | (spec['wave']>gaprange[1])]
 
 for i in range(len(telluric_ranges)):
@@ -44,8 +46,6 @@ spec.reset_index(inplace = True,drop=True)
 
 wave = np.array(spec['wave'])
 flux = np.array(spec['flux'])
-
-snr = snr_estimate(flux)
 
 def log_likelihood(theta, gaprange, telluric_ranges): #theta = [teff,logg, metallicity]
     syn_spec = spec_interpolate(theta[0], theta[1], theta[2], gaprange, telluric_ranges)
