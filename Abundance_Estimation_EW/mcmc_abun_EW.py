@@ -21,7 +21,7 @@ np.random.seed(20)
 observed_file = 'norm_RVcorr_LHS72.txt'
 logg = 4.7 #4.7 for LHS72, 4.8 for LHS73
 
-ions_list = ['Ti','Fe','Na']
+ions_list = ['Ca','Ti','Fe','Na']
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]]
@@ -55,7 +55,7 @@ def log_posterior(theta, logg, ion, gaprange, telluric_ranges, obs_lines):
         return (log_likelihood(theta, logg, ion, gaprange, telluric_ranges, obs_lines) + log_prior(theta))
     
 ndim = 1
-nsteps = 10  
+nsteps = 200  
     
 for ion in ions_list:
 
