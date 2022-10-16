@@ -21,7 +21,7 @@ np.random.seed(20)
 observed_file = 'norm_RVcorr_LHS72.txt'
 logg = 4.7 #4.7 for LHS72, 4.8 for LHS73
 
-ions_list = ['Ca']
+ions_list = ['Ti','Fe','Na']
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]]
@@ -33,7 +33,9 @@ obs_lines = pd.read_excel(f'../Equivalent_Widths/{observed_file}_EWs.xlsx')
 def log_likelihood(theta, logg, ion, gaprange, telluric_ranges, obs_lines):
     abundance=theta[0]
     syn_spec = abun_interpolate(logg, ion, abundance, gaprange, telluric_ranges)
-    ew_synth_df = ew_synth(syn_spec,obs_lines,ion)
+    obs_lines = obs_lines[obs_lines['Corresponding_Ion'].str.contains(f"{ion}")]
+    obs_lines.reset_index(inplace=True,drop=True)
+    ew_synth_df = ew_synth(syn_spec,obs_lines)
     syn_ews = np.array(ew_synth_df['EW'])
     obs_ews = np.array(obs_lines['EW'])
     err = np.array(obs_lines['EW Error'])
@@ -53,7 +55,7 @@ def log_posterior(theta, logg, ion, gaprange, telluric_ranges, obs_lines):
         return (log_likelihood(theta, logg, ion, gaprange, telluric_ranges, obs_lines) + log_prior(theta))
     
 ndim = 1
-nsteps = 200  
+nsteps = 10  
     
 for ion in ions_list:
 

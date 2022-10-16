@@ -14,7 +14,7 @@ def equivalent_width(wave, flux):
     ew = np.sum((1-flux)*dx)
     return ew
 
-def ew_synth(spec_df,obs_lines,ion):
+def ew_synth(spec_df,obs_lines):
     """
     Parameters
     ----------
@@ -22,8 +22,6 @@ def ew_synth(spec_df,obs_lines,ion):
         Synthetic spectrum.
     obs_lines : pandas Datframe
         Lines of observed spectrum for which EWs are needed.
-    ion : string
-        Ion for which the EWs are to be calculated.
 
     Returns
     -------
@@ -34,8 +32,6 @@ def ew_synth(spec_df,obs_lines,ion):
     ew_list = []
     
     for i in range(len(obs_lines)):
-        obs_lines = obs_lines[obs_lines['Corresponding_Ion'].str.contains(f"{ion}")]
-        obs_lines.reset_index(inplace=True,drop=True)
         line = obs_lines['Closest_NIST_Wavelength_(A)'][i]
         blue_end = obs_lines['Blue_end'][i]
         red_end = obs_lines['Red_end'][i]
@@ -50,8 +46,8 @@ def ew_synth(spec_df,obs_lines,ion):
         peak_indices = find_peaks(-gflux,height=-0.8)[0]
 
         if len(peak_indices) == 0:
-            print(f'{line} line not detected in spectrum.')
-            ew_list.append(np.nan)
+            #print(f'{line} line not detected in spectrum.')
+            ew_list.append(100)
             continue
     
         model = ConstantModel()
@@ -91,7 +87,6 @@ def ew_synth(spec_df,obs_lines,ion):
         
     synth_ews = pd.DataFrame()
     synth_ews['Closest_NIST_Wavelength_(A)'] = obs_lines['Closest_NIST_Wavelength_(A)']
-    synth_ews['Corresponding_Ion'] = obs_lines['Corresponding_Ion']
     synth_ews['EW'] = ew_list
         
     return synth_ews

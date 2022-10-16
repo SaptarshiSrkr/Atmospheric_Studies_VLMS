@@ -4,9 +4,9 @@ from lineid_module import line_identification
 
 #Get lines that are visible both in the observed and the synthetic spectrum
 
-obsfile = "norm_RVcorr_LHS72.txt"
+obsfile = "norm_RVcorr_LHS73.txt"
 synhfile = "conv1.34_norm_lte041-4.50-1.5a+0.4.BT-Settl.CIFIST2011_2017.spec.7.txt"
-ions_list = ['Ca']
+ions_list = ['Ca','Fe','Ti','Na']
 
 df_obs = pd.read_csv(f'../Data/OBSERVED/Processed/{obsfile}',names=['wave','flux'],delim_whitespace=True)
 df_synth = pd.read_csv(f'../Data/SYNTHETIC/Convolved/{synhfile}',names=['wave','flux'],delim_whitespace=True)
