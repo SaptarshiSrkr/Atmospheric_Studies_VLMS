@@ -1,9 +1,8 @@
 import emcee
 import numpy as np
 
-spec_name = 'LHS72'
-#ions_list = ['Ca','Fe','Ti','Na']
-ions_list = ['Ca']
+spec_name = 'LHS73'
+ions_list = ['Ca','Fe','Ti','Na']
 err_list = []
 median_list = []
 
