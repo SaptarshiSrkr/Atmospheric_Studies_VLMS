@@ -76,5 +76,5 @@ for ion in ions_list:
     plt.ylabel(f'{ion} Abundance',fontsize=15)
     plt.savefig(f'Chains_{ion}_{observed_file}_final.png',dpi=500)
         
-    figure = corner.corner(sampler.get_chain(flat=True),labels=[f'{ion} Abundance'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(abun_min,abun_max)])
+    figure = corner.corner(sampler.get_chain(flat=True,discard=50),labels=[f'{ion} Abundance'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12})
     plt.savefig(f'Corner_{ion}_{observed_file}.png',dpi=500)

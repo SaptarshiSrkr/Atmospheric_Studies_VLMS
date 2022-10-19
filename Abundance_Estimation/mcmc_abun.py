@@ -16,10 +16,11 @@ np.random.seed(20)
 #INPUTS
 #########################################
 
-observed_file = 'norm_RVcorr_LHS73.txt' 
-logg = 4.8 #4.7 for LHS72, 4.8 for LHS73
+observed_file = 'norm_RVcorr_LHS72.txt' 
+logg = 4.7 #4.7 for LHS72, 4.8 for LHS73
 
-ions_list = ['Ca','Fe','Ti','Na']
+#ions_list = ['Ca','Fe','Ti','Na']
+ions_list = ['Ca']
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 
@@ -34,7 +35,7 @@ def snr_estimate(flux):
     if (n>4):
         signal = np.median(flux)
         noise  = 0.6052697 * np.median(abs(2.0 * flux[2:n-2] - flux[0:n-4] - flux[4:n]))
-        return float(signal / noise)  
+        return float(signal / noise)
     else:
         return 0.0
     
@@ -95,5 +96,5 @@ for ion in ions_list:
     plt.ylabel(f'{ion} Abundance',fontsize=15)
     plt.savefig(f'Chains_{ion}_{observed_file}_final.png',dpi=500)
         
-    figure = corner.corner(sampler.get_chain(flat=True),labels=[f'{ion} Abundance'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(abun_min,abun_max)])
+    figure = corner.corner(sampler.get_chain(flat=True,discard=50),labels=[f'{ion} Abundance'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12})
     plt.savefig(f'Corner_{ion}_{observed_file}.png',dpi=500)
