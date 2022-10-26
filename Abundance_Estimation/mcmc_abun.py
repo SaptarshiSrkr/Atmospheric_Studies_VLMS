@@ -19,8 +19,7 @@ np.random.seed(20)
 observed_file = 'norm_RVcorr_LHS72.txt' 
 logg = 4.7 #4.7 for LHS72, 4.8 for LHS73
 
-#ions_list = ['Ca','Fe','Ti','Na']
-ions_list = ['Ca']
+ions_list = ['Ca','Fe','Ti','Na']
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 

@@ -34,6 +34,7 @@ def snr_estimate(flux):
         return float(signal / noise)  
     else:
         return 0.0
+        
 spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
 
 snr = snr_estimate(np.array(spec['flux']))
