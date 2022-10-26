@@ -57,7 +57,7 @@ def log_likelihood(theta, logg, ion, gaprange, telluric_ranges):
     syn_wave = np.array(syn_spec['wave'])
     syn_flux = np.array(syn_spec['flux'])
     isyn_flux = np.interp(wave,syn_wave,syn_flux)
-    fluxerr = isyn_flux/snr
+    fluxerr = flux/snr
     return -0.5 * np.sum(np.log(2*np.pi*fluxerr**2) + (flux - isyn_flux)**2/fluxerr**2)
 
 def log_prior(theta):
