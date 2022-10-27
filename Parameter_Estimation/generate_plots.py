@@ -2,10 +2,10 @@ import emcee
 import corner
 import matplotlib.pyplot as plt
 
-reader = emcee.backends.HDFBackend('logfile_norm_RVcorr_LHS73.txt.h5')
+reader = emcee.backends.HDFBackend('logfile_norm_RVcorr_LHS72.txt.h5')
 burnin = 0
 
-corner.corner(reader.get_chain(flat=True, discard=burnin),labels=['Teff', 'log g', '[M/H]'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(3800,4200),(4.0,5.5),(-2.5,0)])
+corner.corner(reader.get_chain(flat=True, discard=burnin),labels=['Teff', 'log g', '[M/H]'], quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12})
 plt.savefig('corner.png',dpi=500,facecolor='white')
 
 fig, ax = plt.subplots(3, sharex=True,figsize=(10,8))
