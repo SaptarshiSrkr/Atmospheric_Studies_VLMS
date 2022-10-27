@@ -37,8 +37,8 @@ def snr_estimate(flux):
         
 spec = pd.read_csv(f'../Data/OBSERVED/Processed/{observed_file}', names=['wave','flux'], delim_whitespace=True)
 
-#snr = snr_estimate(np.array(spec['flux']))
-snr = 32
+snr = snr_estimate(np.array(spec['flux']))
+#snr = 32
 
 spec = spec[(spec['wave']<gaprange[0]) | (spec['wave']>gaprange[1])]
 
