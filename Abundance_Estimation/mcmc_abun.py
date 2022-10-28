@@ -24,6 +24,8 @@ ions_list = ['Ca','Fe','Ti','Na']
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 
 
+nsteps = 200
+
 #########################################
 
 def snr_estimate(flux):
@@ -74,7 +76,6 @@ def log_posterior(theta, logg, ion, gaprange, telluric_ranges):
         return (log_likelihood(theta, logg, ion, gaprange, telluric_ranges) + log_prior(theta))
 
 ndim = 1
-nsteps = 200
 
 for ion in ions_list:
 

@@ -21,6 +21,8 @@ observed_file = 'norm_RVcorr_LHS72.txt'
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 
 
+nsteps = 500
+
 #########################################
 
 def snr_estimate(flux):
@@ -74,8 +76,6 @@ theta_min = [spectra_df['Teff'].min(),spectra_df['Logg'].min(),spectra_df['Metal
 theta_max = [spectra_df['Teff'].max(),spectra_df['Logg'].max(),spectra_df['Metal'].max()]
      
 ndim = 3
-nsteps = 500
- 
 backend = emcee.backends.HDFBackend(f"logfile_{observed_file}.h5")
 
 #For the 1st run 
@@ -93,7 +93,9 @@ backend.reset(len(starting_guesses),ndim)
 #For subsequent runs (when logfile is present)
 #*****************************************  
 '''
-starting_guesses = backend.get_chain()[-1]
+chain = backend.get_chain()
+starting_guesses = chain[-1]
+nsteps = nsteps - len(chain)
 '''
 #*****************************************  
 
