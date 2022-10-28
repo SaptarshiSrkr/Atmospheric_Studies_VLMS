@@ -16,7 +16,7 @@ np.random.seed(20)
 #INPUTS
 #########################################
 
-observed_file = 'norm_RVcorr_LHS73.txt'
+observed_file = 'norm_RVcorr_LHS72.txt'
 
 gaprange = [8200,8390]
 telluric_ranges = [[6860, 6960],[7550, 7650],[8200, 8430]] 
@@ -111,5 +111,5 @@ ax[1].set_ylabel('log g',fontsize=15)
 ax[2].set_ylabel('[M/H]',fontsize=15)
 fig.savefig(f'Chains_{observed_file}_final.png',dpi=500)
     
-figure = corner.corner(sampler.get_chain(flat=True),labels=['Teff', 'log g', '[M/H]'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12}, range=[(3800,4200),(4,5.5),(-2.5,0)])
+figure = corner.corner(sampler.get_chain(flat=True),labels=['Teff', 'log g', '[M/H]'],quantiles=[0.16, 0.5, 0.84], show_titles=True, title_kwargs={"fontsize": 12})
 plt.savefig(f'Corner_{observed_file}.png',dpi=500)
